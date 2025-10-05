@@ -123,6 +123,26 @@ describe('when there are exercises in the MongoDB', () => {
     const idsInDb = exercisesAfterDelete.map(e => e.id)
     assert(!idsInDb.includes(exerciseToDelete.id))
   })
+
+  test('an exercise can be updated with PUT', async () => {
+    const exercisesBeforePut = await helper.exercisesInDb()
+    const exerciseToUpdate = exercisesBeforePut[0]
+    exerciseToUpdate.name = 'updated name'
+    exerciseToUpdate.description = 'updated description'
+    exerciseToUpdate.instructions = ['updated instructions']
+
+    const response = await api
+      .put(`/api/exercises/${exerciseToUpdate.id}`)
+      .send(exerciseToUpdate)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const exercisesAfterPut = await helper.exercisesInDb()
+    const idsInDb = exercisesAfterPut.map(e => e.id)
+    assert.strictEqual(exercisesBeforePut.length, exercisesAfterPut.length)
+    assert(idsInDb.includes(exerciseToUpdate.id))
+    assert.deepStrictEqual(exerciseToUpdate, response.body)
+  })
 })
 
 after(async () => {

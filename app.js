@@ -4,6 +4,7 @@ const Exercise = require('./models/exercise')
 const bodyParts = require('./data/bodyParts')
 const equipment = require('./data/equipment')
 const middleware = require('./utils/middleware')
+const logger = require('./utils/logger')
 
 const app = express()
 app.use(express.json())
@@ -52,7 +53,28 @@ app.delete('/api/exercises/:id', async (request, response) => {
   const id = request.params.id
   const deletedExercise = await Exercise.findByIdAndDelete(id)
 
+  logger.info('Deleted', deletedExercise)
   response.status(204).end()
+})
+
+app.put('/api/exercises/:id', async (request, response) => {
+  const id = request.params.id
+  const { name, description, bodyPart, equipment, instructions } = request.body
+
+  const exercise = await Exercise.findById(id)
+
+  if (exercise) {
+    exercise.name = name
+    exercise.description = description
+    exercise.bodyPart = bodyPart
+    exercise.equipment = equipment
+    exercise.instructions = instructions
+
+    const savedExercise = await exercise.save()
+    response.json(savedExercise)
+  } else {
+    response.status(404).end()
+  }
 })
 
 app.get('/api/list/bodyParts', (request, response) => {
