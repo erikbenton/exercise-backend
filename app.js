@@ -1,28 +1,19 @@
 const express = require('express')
 const mongoService = require('./services/mongoDb')
-const Exercise = require('./models/exercise')
-const bodyParts = require('./data/bodyParts')
-const equipment = require('./data/equipment')
+const middleware = require('./utils/middleware')
+const exercisesRouter = require('./controllers/exercises')
+const listsRouter = require('./controllers/lists')
 
 const app = express()
+app.use(express.json())
+app.use(middleware.requestLogger)
 
 mongoService.initializeMongoConnection()
 
-app.get('/', (request, response) => {
-  response.send('<h1>Exercise backend</h1>')
-})
+app.use('/api/exercises', exercisesRouter)
+app.use('/api/lists', listsRouter)
 
-app.get('/api/exercises', async (request, response) => {
-  const exercises = await Exercise.find({})
-  response.send(exercises)
-})
-
-app.get('/api/bodyPartsList', (request, response) => {
-  response.send(bodyParts)
-})
-
-app.get('/api/equipmentList', (request, response) => {
-  response.send(equipment)
-})
+app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
 
 module.exports = app
