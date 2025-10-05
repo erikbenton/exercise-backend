@@ -1,0 +1,22 @@
+{
+  "name": "exercise-backend",
+  "version": "1.0.0",
+  "description": "backend for exercise app front end",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node index.js",
+    "test": "cross-env NODE_ENV=test node --test",
+    "dev": "cross-env NODE_ENV=development node --watch index.js"
+  },
+  "author": "Erik Benton",
+  "license": "MIT",
+  "dependencies": {
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongoose": "^8.19.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.4"
+  }
+}
