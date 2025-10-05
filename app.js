@@ -1,10 +1,8 @@
 const express = require('express')
 const mongoService = require('./services/mongoDb')
-const Exercise = require('./models/exercise')
-const bodyParts = require('./data/bodyParts')
-const equipment = require('./data/equipment')
 const middleware = require('./utils/middleware')
-const logger = require('./utils/logger')
+const exercisesRouter = require('./controllers/exercises')
+const listsRouter = require('./controllers/lists')
 
 const app = express()
 app.use(express.json())
@@ -12,78 +10,8 @@ app.use(middleware.requestLogger)
 
 mongoService.initializeMongoConnection()
 
-app.get('/api/exercises', async (request, response) => {
-  const exercises = await Exercise.find({})
-  response.json(exercises)
-})
-
-app.get('/api/exercises/name/:name', async (request, response) => {
-  const name = request.params.name
-  const searchName = new RegExp(name, 'i')
-  const exercises = await Exercise.find({ name: searchName}).exec()
-  response.send(exercises)
-})
-
-app.get('/api/exercises/:id', async (request, response) => {
-  const id = request.params.id
-  const exercise = await Exercise.findById(id)
-
-  if (exercise) {
-    response.json(exercise)
-  } else {
-    response.status(404).end()
-  }
-})
-
-app.post('/api/exercises', async (request, response) => {
-  const { name, description, bodyPart, equipment, instructions } = request.body
-  const exercise = new Exercise({
-    name,
-    description,
-    bodyPart,
-    equipment,
-    instructions
-  })
-
-  const savedExercise = await exercise.save()
-  response.status(201).json(savedExercise)
-})
-
-app.delete('/api/exercises/:id', async (request, response) => {
-  const id = request.params.id
-  const deletedExercise = await Exercise.findByIdAndDelete(id)
-
-  logger.info('Deleted', deletedExercise)
-  response.status(204).end()
-})
-
-app.put('/api/exercises/:id', async (request, response) => {
-  const id = request.params.id
-  const { name, description, bodyPart, equipment, instructions } = request.body
-
-  const exercise = await Exercise.findById(id)
-
-  if (exercise) {
-    exercise.name = name
-    exercise.description = description
-    exercise.bodyPart = bodyPart
-    exercise.equipment = equipment
-    exercise.instructions = instructions
-
-    const savedExercise = await exercise.save()
-    response.json(savedExercise)
-  } else {
-    response.status(404).end()
-  }
-})
-
-app.get('/api/list/bodyParts', (request, response) => {
-  response.send(bodyParts)
-})
-
-app.get('/api/list/equipment', (request, response) => {
-  response.send(equipment)
-})
+app.use('/api/exercises', exercisesRouter)
+app.use('/api/lists', listsRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
