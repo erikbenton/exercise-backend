@@ -49,7 +49,9 @@ const exercisesInDb = async () => {
 }
 
 const nonExistingId = async () => {
-  const exercise = initialExercises[0]
+  const exercise = new Exercise({
+    ...initialExercises[0]
+  })
   await exercise.save()
   await exercise.deleteOne()
 

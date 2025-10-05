@@ -1,10 +1,20 @@
 const mongoose = require('mongoose')
+const bodyParts = require('../data/bodyParts')
+const equipments = require('../data/equipment')
 
 const exerciseSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: String,
-  bodyPart: String,
-  equipment: String,
+  bodyPart: {
+    type: String, required: true, validate: function (v) {
+      return bodyParts.indexOf(v) > -1
+    }
+  },
+  equipment: {
+    type: String, required: true, validate: function (v) {
+      return equipments.indexOf(v) > -1
+    }
+  },
   instructions: Array
 })
 
