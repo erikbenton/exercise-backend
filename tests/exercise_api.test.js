@@ -35,7 +35,7 @@ describe('when there are exercises in the MongoDB', () => {
     assert.deepStrictEqual(response.body, exerciseToGet)
   })
 
-  test('GETting a specific exercise fails if it does not exist', async () => {
+  test('GETting a specific exercise fails if it does not exist (404)', async () => {
     const exerciseIdNotInDb = await helper.nonExistingId()
 
     await api
@@ -109,6 +109,19 @@ describe('when there are exercises in the MongoDB', () => {
       .post('/api/exercises')
       .send(invalidExercise)
       .expect(400)
+  })
+
+  test('exercise can be DELETEd with valid id', async () => {
+    const exercisesBeforeDelete = await helper.exercisesInDb()
+    const exerciseToDelete = exercisesBeforeDelete[0]
+
+    await api
+      .delete(`/api/exercises/${exerciseToDelete.id}`)
+      .expect(204)
+
+    const exercisesAfterDelete = await helper.exercisesInDb()
+    const idsInDb = exercisesAfterDelete.map(e => e.id)
+    assert(!idsInDb.includes(exerciseToDelete.id))
   })
 })
 

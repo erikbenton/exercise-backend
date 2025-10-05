@@ -48,11 +48,18 @@ app.post('/api/exercises', async (request, response) => {
   response.status(201).json(savedExercise)
 })
 
-app.get('/api/bodyPartsList', (request, response) => {
+app.delete('/api/exercises/:id', async (request, response) => {
+  const id = request.params.id
+  const deletedExercise = await Exercise.findByIdAndDelete(id)
+
+  response.status(204).end()
+})
+
+app.get('/api/list/bodyParts', (request, response) => {
   response.send(bodyParts)
 })
 
-app.get('/api/equipmentList', (request, response) => {
+app.get('/api/list/equipment', (request, response) => {
   response.send(equipment)
 })
 
