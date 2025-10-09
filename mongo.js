@@ -8,10 +8,12 @@ const url = MONGODB_URI
 mongoose.set('strictQuery', false)
 
 mongoose.connect(url)
-
-Exercise.insertMany(helper.initialExercises)
+Exercise.deleteMany({})
   .then(() => {
-    console.log('saved exercises!')
-    mongoose.connection.close()
+    Exercise.insertMany(helper.initialExercises)
+      .then(() => {
+        console.log('saved exercises!')
+        mongoose.connection.close()
+      })
   })
 

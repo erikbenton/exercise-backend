@@ -129,7 +129,7 @@ describe('when there are exercises in the MongoDB', () => {
     const exerciseToUpdate = exercisesBeforePut[0]
     exerciseToUpdate.name = 'updated name'
     exerciseToUpdate.description = 'updated description'
-    exerciseToUpdate.instructions = ['updated instructions']
+    exerciseToUpdate.instructions = [{content: 'updated instructions'}]
 
     const response = await api
       .put(`/api/exercises/${exerciseToUpdate.id}`)
@@ -141,7 +141,22 @@ describe('when there are exercises in the MongoDB', () => {
     const idsInDb = exercisesAfterPut.map(e => e.id)
     assert.strictEqual(exercisesBeforePut.length, exercisesAfterPut.length)
     assert(idsInDb.includes(exerciseToUpdate.id))
-    assert.deepStrictEqual(exerciseToUpdate, response.body)
+
+    // the instruction ObjectIds get rewritten due to their nested behavior
+    // so only the instruction contents are compared, removing their ObjectIds
+    const updatedPutExercise = {
+      ...exerciseToUpdate,
+      instructions: null
+    }
+    const updatedResponseExercise = {
+      ...response.body,
+      instructions: null
+    }
+    const updatedPutInstructions = exerciseToUpdate.instructions.map(i => i.content)
+    const updatedResponseInstructions = response.body.instructions.map(i => i.content)
+
+    assert.deepStrictEqual(updatedPutExercise, updatedResponseExercise)
+    assert.deepStrictEqual(updatedPutInstructions, updatedResponseInstructions)
   })
 })
 
