@@ -19,7 +19,7 @@ instructionSchema.set('toJSON', {
 
 const exerciseSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  description: String,
+  description: { type: String, default: null},
   bodyPart: {
     type: String, required: true, validate: function (v) {
       return bodyParts.indexOf(v) > -1
@@ -30,7 +30,7 @@ const exerciseSchema = new mongoose.Schema({
       return equipments.indexOf(v) > -1
     }
   },
-  instructions: [instructionSchema]
+  instructions: {type: [instructionSchema], default: null }
 })
 
 exerciseSchema.set('toJSON', {
